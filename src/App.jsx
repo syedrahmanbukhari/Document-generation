@@ -73,10 +73,10 @@ function App() {
 
   const validate = () => {
     const required = [
-      ['courtType', 'Court type'], ['county', 'County'], ['plaintiff', 'Plaintiff'], ['defendant', 'Defendant'],
-      ['caseNumber', 'Case number'], ['fullName', 'Full name'], ['propertyAddress', 'Property address'],
-      ['circumstances', 'Description of what happened'], ['date', 'Date'], ['mailingAddress', 'Mailing address'],
-      ['phone', 'Phone number'], ['email', 'Email address'], ['deliveryMethod', 'Delivery method'],
+      ['courtType', 'Court type'], ['county', 'County'], ['plaintiff', 'Plaintiff name'], ['defendant', 'Defendant name'],
+      ['caseNumber', 'Case number'], ['fullName', 'Full legal name'], ['propertyAddress', 'Property address'],
+      ['mailingAddress', 'Mailing address'], ['phone', 'Phone number'], ['email', 'Email address'],
+      ['circumstances', 'Details of service'], ['date', 'Document date'], ['deliveryMethod', 'Delivery method'],
       ['plaintiffAttorneyName', "Plaintiff or plaintiff's attorney name"],
       ['plaintiffAttorneyAddress', "Plaintiff or plaintiff's attorney address"],
     ]
@@ -86,11 +86,11 @@ function App() {
       return false
     }
     if (form.deliveryMethod === 'Other' && !form.deliveryOther.trim()) {
-      setError('Please describe the “Other” delivery method.')
+      setError('Please provide details of your delivery method.')
       return false
     }
     if (!acceptedDisclaimer) {
-      setError('Please confirm the educational-use disclaimer before generating the PDF.')
+      setError('Please acknowledge the educational-use statement before generating your PDF.')
       return false
     }
     return true
@@ -117,7 +117,7 @@ function App() {
           <section className="hero">
             <div className="eyebrow">Guided document preparation</div>
             <h1>Choose a document to begin.</h1>
-            <p>Answer a short guided form once. Repeated information such as your full name and date is automatically reused throughout the document.</p>
+            <p>Complete the guided questionnaire with your case details to prepare a personalized PDF document.</p>
           </section>
 
           <section className="document-grid">
@@ -166,68 +166,69 @@ function App() {
       <main className="form-layout">
         <section className="form-intro">
           <div className="eyebrow">{selected.badge}</div>
-          <h1>Tell us about the case.</h1>
+          <h1>Enter your case details.</h1>
+          <p>Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.</p>
         </section>
 
         <form className="question-form" onSubmit={(e) => e.preventDefault()}>
           <FormSection number="A" title="Court information" subtitle="Questions 1–5">
-            <Field label="1. In which court has your case been filed?" required>
+            <Field label="1. Court type" help="Select the court listed on your case documents." required>
               <select value={form.courtType} onChange={(e) => update('courtType', e.target.value)}>
-                <option value="">Select court</option>
+                <option value="">Select a court</option>
                 <option>Magistrate</option>
                 <option>State</option>
                 <option>Superior</option>
               </select>
             </Field>
-            <Field label="2. Which County?" required>
+            <Field label="2. County" help="Enter the county where the case was filed." required>
               <input value={form.county} onChange={(e) => update('county', e.target.value)} placeholder="e.g. Fulton" />
             </Field>
-            <Field label="3. Plaintiff" help="Landlord, apartment complex, or other listed plaintiff." required>
+            <Field label="3. Plaintiff name" help="Enter the person or organization named as the plaintiff on your case documents." required>
               <input value={form.plaintiff} onChange={(e) => update('plaintiff', e.target.value)} placeholder="Plaintiff name" />
             </Field>
-            <Field label="4. Defendant" help="Your name, all other occupants, or whoever is listed in the case." required>
-              <input value={form.defendant} onChange={(e) => update('defendant', e.target.value)} placeholder="Defendant name(s)" />
+            <Field label="4. Defendant name" help="Enter the defendant name or names exactly as shown on your case documents." required>
+              <input value={form.defendant} onChange={(e) => update('defendant', e.target.value)} placeholder="Defendant name or names" />
             </Field>
-            <Field label="5. Case Number" required>
+            <Field label="5. Case number" required>
               <input value={form.caseNumber} onChange={(e) => update('caseNumber', e.target.value)} placeholder="Case number" />
             </Field>
           </FormSection>
 
-          <FormSection number="B" title="Your information" subtitle="Questions 6, 7, 10–13 & 18">
-            <Field label="6 / 10 / 18. Your Full Legal Name" help="Enter once; it will automatically fill all three name locations." required>
-              <input value={form.fullName} onChange={(e) => update('fullName', e.target.value)} placeholder="First and last name" />
+          <FormSection number="B" title="Your information" subtitle="Questions 6–10">
+            <Field label="6. Full legal name" help="Enter your complete legal name, including any middle names." required>
+              <input value={form.fullName} onChange={(e) => update('fullName', e.target.value)} placeholder="Full legal name" />
             </Field>
-            <Field label="7. Full Property Address" required>
-              <textarea rows="2" value={form.propertyAddress} onChange={(e) => update('propertyAddress', e.target.value)} placeholder="Street, city, state, ZIP" />
+            <Field label="7. Property address" help="Enter the full address of the property involved in this case." required>
+              <textarea rows="2" value={form.propertyAddress} onChange={(e) => update('propertyAddress', e.target.value)} placeholder="Street address, unit number, city, state, ZIP code" />
             </Field>
             <label className="check-row">
               <input type="checkbox" checked={sameAddress} onChange={(e) => toggleSameAddress(e.target.checked)} />
               <span>My mailing address is the same as the property address.</span>
             </label>
-            <Field label="11. Mailing Address" required>
-              <textarea rows="2" value={form.mailingAddress} onChange={(e) => update('mailingAddress', e.target.value)} placeholder="Mailing address" />
+            <Field label="8. Mailing address" help="Enter the address where you receive correspondence." required>
+              <textarea rows="2" value={form.mailingAddress} onChange={(e) => update('mailingAddress', e.target.value)} placeholder="Street address, unit number, city, state, ZIP code" />
             </Field>
             <div className="two-col">
-              <Field label="12. Phone Number" required>
+              <Field label="9. Phone number" required>
                 <input value={form.phone} onChange={(e) => update('phone', e.target.value)} placeholder="Phone number" />
               </Field>
-              <Field label="13. Email Address" required>
+              <Field label="10. Email address" required>
                 <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="name@example.com" />
               </Field>
             </div>
           </FormSection>
 
-          <FormSection number="C" title="Service details" subtitle="Questions 8, 9 & 17">
-            <Field label="8. Describe exactly what happened" help="For example: you never received papers, papers were posted but not mailed, or papers were given to someone who does not live in the home." required>
-              <textarea rows="6" value={form.circumstances} onChange={(e) => update('circumstances', e.target.value)} placeholder="Describe the facts in your own words..." />
+          <FormSection number="C" title="Service details" subtitle="Questions 11–12">
+            <Field label="11. Details of service" help="Describe what happened with the court papers. Include relevant dates, locations, how the papers were delivered or discovered, and who received them, if anyone." required>
+              <textarea rows="6" value={form.circumstances} onChange={(e) => update('circumstances', e.target.value)} placeholder="Describe the circumstances in your own words" />
             </Field>
-            <Field label="9 / 17. Date" help="Enter once; this date fills both date locations." required>
+            <Field label="12. Document date" help="Select the date to appear on your document." required>
               <input type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
             </Field>
           </FormSection>
 
-          <FormSection number="D" title="Certificate of service" subtitle="Questions 14–16">
-            <Field label="14. How will you deliver a copy to your landlord?" required>
+          <FormSection number="D" title="Certificate of service" subtitle="Questions 13–15">
+            <Field label="13. Delivery method" help="Select how you will deliver a copy to the plaintiff or their attorney." required>
               <div className="choice-grid">
                 {['Hand delivery', 'U.S. Mail', 'Other'].map((method) => (
                   <label className={`choice-card ${form.deliveryMethod === method ? 'active' : ''}`} key={method}>
@@ -238,15 +239,15 @@ function App() {
               </div>
             </Field>
             {form.deliveryMethod === 'Other' && (
-              <Field label="Describe other delivery method" required>
-                <input value={form.deliveryOther} onChange={(e) => update('deliveryOther', e.target.value)} placeholder="Describe delivery method" />
+              <Field label="Delivery method details" help="Specify the other delivery method you will use." required>
+                <input value={form.deliveryOther} onChange={(e) => update('deliveryOther', e.target.value)} placeholder="Enter delivery method details" />
               </Field>
             )}
-            <Field label="15. Plaintiff or Plaintiff’s Attorney Name" required>
-              <input value={form.plaintiffAttorneyName} onChange={(e) => update('plaintiffAttorneyName', e.target.value)} placeholder="Name" />
+            <Field label="14. Recipient name" help="Enter the name of the plaintiff or attorney who will receive the copy." required>
+              <input value={form.plaintiffAttorneyName} onChange={(e) => update('plaintiffAttorneyName', e.target.value)} placeholder="Person or organization name" />
             </Field>
-            <Field label="16. Plaintiff or Plaintiff’s Attorney Address" required>
-              <textarea rows="3" value={form.plaintiffAttorneyAddress} onChange={(e) => update('plaintiffAttorneyAddress', e.target.value)} placeholder="Street, city, state, ZIP" />
+            <Field label="15. Recipient address" help="Enter the full address of the plaintiff or attorney receiving the copy." required>
+              <textarea rows="3" value={form.plaintiffAttorneyAddress} onChange={(e) => update('plaintiffAttorneyAddress', e.target.value)} placeholder="Street address, suite or unit number, city, state, ZIP code" />
             </Field>
           </FormSection>
 

@@ -8,11 +8,9 @@ React + Vite website for two guided legal self-help document flows:
 ## Implemented
 
 - Distinct document-selection landing page inspired by the supplied reference without copying it.
-- Guided form for all 18 requested fields.
-- Duplicate values are entered once and reused:
-  - Full legal name -> questions 6, 10 and 18.
-  - Date -> questions 9 and 17.
-  - Optional "mailing address same as property address" helper.
+- Customer questionnaire numbered sequentially from 1–15, with additional delivery details when "Other" is selected.
+- Full legal name and date are reused throughout the PDF without exposing internal template references in the questionnaire.
+- Optional "mailing address same as property address" helper.
 - Delivery-method choices: Hand delivery / U.S. Mail / Other.
 - Client-side PDF generation with jsPDF.
 - Both document options use the supplied improper-service motion, requesting dismissal or alternatively quashing service, followed by the existing relief and certificate of service.
