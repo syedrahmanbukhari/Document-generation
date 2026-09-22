@@ -1,5 +1,9 @@
 import { useMemo, useState } from 'react'
 import { generateDocumentPdf } from './pdf/generateDocument'
+import DocumentQuestions from './DocumentQuestions'
+import { validateAnswers } from './documentFields'
+
+const DISCLAIMER = 'This website is a self-help document software tool, not a law firm. We do not provide legal advice, review your answers for legal sufficiency, or represent you in court. Using this website does not create an attorney–client relationship.'
 
 const initialForm = {
   courtType: '',
@@ -11,6 +15,9 @@ const initialForm = {
   propertyAddress: '',
   circumstances: '',
   date: '',
+  signatureName: '',
+  serviceDate: '',
+  serviceSignatureName: '',
   mailingAddress: '',
   phone: '',
   email: '',
@@ -24,16 +31,18 @@ const docs = [
   {
     id: 'motion-to-quash',
     number: '01',
-    name: 'Motion to Dismiss / Quash',
-    description: 'Prepare page 1 of your motion with the court information, case details, and circumstances of service.',
+    name: 'Motion to Quash',
+    description: 'Answer six questions to prepare your Motion to Quash Service.',
     badge: 'Document #1',
+    price: '$50.00',
   },
   {
     id: 'motion-to-dismiss',
     number: '02',
-    name: 'Relief and Certificate of Service',
-    description: 'Prepare page 2 with the requested relief, your contact information, and certificate of service.',
+    name: 'Motion to Dismiss',
+    description: 'Prepare your motion, requested relief, and certificate of service in one PDF.',
     badge: 'Document #2',
+    price: '$50.00',
   },
 ]
 
@@ -45,12 +54,17 @@ function App() {
   const [error, setError] = useState('')
 
   const selected = useMemo(() => docs.find((d) => d.id === selectedDoc), [selectedDoc])
-  const isFirstDocument = selectedDoc === 'motion-to-quash'
 
   const update = (key, value) => {
     setError('')
     setForm((prev) => {
       const next = { ...prev, [key]: value }
+      if (key === 'fullName') {
+        for (const nameKey of ['signatureName', 'serviceSignatureName']) {
+          if (!prev[nameKey] || prev[nameKey] === prev.fullName) next[nameKey] = value
+        }
+      }
+      if (key === 'date' && (!prev.serviceDate || prev.serviceDate === prev.date)) next.serviceDate = value
       if (key === 'propertyAddress' && sameAddress) next.mailingAddress = value
       return next
     })
@@ -75,23 +89,9 @@ function App() {
   }
 
   const validate = () => {
-    const required = isFirstDocument ? [
-      ['courtType', 'Court type'], ['county', 'County'], ['plaintiff', 'Plaintiff name'], ['defendant', 'Defendant name'],
-      ['caseNumber', 'Case number'], ['fullName', 'Full legal name'], ['propertyAddress', 'Property address'],
-      ['circumstances', 'Details of service'],
-    ] : [
-      ['fullName', 'Full legal name'],
-      ['mailingAddress', 'Mailing address'], ['phone', 'Phone number'], ['email', 'Email address'],
-      ['date', 'Document date'], ['deliveryMethod', 'Delivery method'],
-      ['plaintiffAttorneyName', 'Recipient name'], ['plaintiffAttorneyAddress', 'Recipient address'],
-    ]
-    const missing = required.find(([key]) => !String(form[key] || '').trim())
-    if (missing) {
-      setError(`Please complete: ${missing[1]}.`)
-      return false
-    }
-    if (!isFirstDocument && form.deliveryMethod === 'Other' && !form.deliveryOther.trim()) {
-      setError('Please provide details of your delivery method.')
+    const validationError = validateAnswers(selectedDoc, form)
+    if (validationError) {
+      setError(validationError)
       return false
     }
     if (!acceptedDisclaimer) {
@@ -103,7 +103,11 @@ function App() {
 
   const generate = () => {
     if (!validate()) return
-    generateDocumentPdf(selectedDoc, form)
+    try {
+      generateDocumentPdf(selectedDoc, form)
+    } catch (error) {
+      setError(error.message || 'Unable to generate your PDF. Please try again.')
+    }
   }
 
   if (!selectedDoc) {
@@ -118,11 +122,16 @@ function App() {
           <div className="topbar-pill">Georgia</div>
         </header>
 
+        <aside className="legal-disclaimer top-disclaimer" aria-label="Legal disclaimer">
+          <strong>Important Legal Disclaimer</strong>
+          <p>{DISCLAIMER}</p>
+        </aside>
+
         <main>
           <section className="hero">
             <div className="eyebrow">Guided document preparation</div>
             <h1>Choose a document to begin.</h1>
-            <p>Select the page you need and complete its questionnaire to download a separate PDF.</p>
+            <p>Choose your document and complete the questionnaire to prepare your personalized PDF.</p>
           </section>
 
           <section className="document-grid">
@@ -137,6 +146,10 @@ function App() {
                 </div>
                 <h2>{doc.name}</h2>
                 <p>{doc.description}</p>
+                <div className="document-price" aria-label={`Price ${doc.price}`}>
+                  <span>Document price</span>
+                  <strong>{doc.price}</strong>
+                </div>
                 <button onClick={() => openDocument(doc.id)}>Start questionnaire <span>→</span></button>
               </article>
             ))}
@@ -168,112 +181,35 @@ function App() {
 
       </header>
 
+      <aside className="legal-disclaimer top-disclaimer" aria-label="Legal disclaimer">
+        <strong>Important Legal Disclaimer</strong>
+        <p>{DISCLAIMER}</p>
+      </aside>
+
       <main className="form-layout">
         <section className="form-intro">
           <div className="eyebrow">{selected.badge}</div>
-          <h1>{isFirstDocument ? 'Enter your case details.' : 'Complete your service information.'}</h1>
+          <h1>Enter your case details.</h1>
           <p>Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.</p>
         </section>
 
         <form className="question-form" onSubmit={(e) => e.preventDefault()}>
-          {isFirstDocument && (
-          <FormSection number="A" title="Court information" subtitle="Questions 1–5">
-            <Field label="1. Court type" help="Select the court listed on your case documents." required>
-              <select value={form.courtType} onChange={(e) => update('courtType', e.target.value)}>
-                <option value="">Select a court</option>
-                <option>Magistrate</option>
-                <option>State</option>
-                <option>Superior</option>
-              </select>
-            </Field>
-            <Field label="2. County" help="Enter the county where the case was filed." required>
-              <input value={form.county} onChange={(e) => update('county', e.target.value)} placeholder="e.g. Fulton" />
-            </Field>
-            <Field label="3. Plaintiff name" help="Enter the person or organization named as the plaintiff on your case documents." required>
-              <input value={form.plaintiff} onChange={(e) => update('plaintiff', e.target.value)} placeholder="Plaintiff name" />
-            </Field>
-            <Field label="4. Defendant name" help="Enter the defendant name or names exactly as shown on your case documents." required>
-              <input value={form.defendant} onChange={(e) => update('defendant', e.target.value)} placeholder="Defendant name or names" />
-            </Field>
-            <Field label="5. Case number" required>
-              <input value={form.caseNumber} onChange={(e) => update('caseNumber', e.target.value)} placeholder="Case number" />
-            </Field>
-          </FormSection>
-          )}
-
-          <FormSection number={isFirstDocument ? 'B' : 'A'} title="Your information" subtitle={isFirstDocument ? 'Questions 6–7' : 'Questions 1–4'}>
-            <Field label={`${isFirstDocument ? 6 : 1}. Full legal name`} help="Enter your complete legal name, including any middle names." required>
-              <input value={form.fullName} onChange={(e) => update('fullName', e.target.value)} placeholder="Full legal name" />
-            </Field>
-            {isFirstDocument ? (
-            <Field label="7. Property address" help="Enter the full address of the property involved in this case." required>
-              <textarea rows="2" value={form.propertyAddress} onChange={(e) => update('propertyAddress', e.target.value)} placeholder="Street address, unit number, city, state, ZIP code" />
-            </Field>
-            ) : (
-            <>
-            {form.propertyAddress.trim() && (
-            <label className="check-row">
-              <input type="checkbox" checked={sameAddress} onChange={(e) => toggleSameAddress(e.target.checked)} />
-              <span>My mailing address is the same as the property address.</span>
-            </label>
-            )}
-            <Field label="2. Mailing address" help="Enter the address where you receive correspondence." required>
-              <textarea rows="2" value={form.mailingAddress} onChange={(e) => update('mailingAddress', e.target.value)} placeholder="Street address, unit number, city, state, ZIP code" />
-            </Field>
-            <div className="two-col">
-              <Field label="3. Phone number" required>
-                <input value={form.phone} onChange={(e) => update('phone', e.target.value)} placeholder="Phone number" />
-              </Field>
-              <Field label="4. Email address" required>
-                <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="name@example.com" />
-              </Field>
-            </div>
-            </>
-            )}
-          </FormSection>
-
-          <FormSection number={isFirstDocument ? 'C' : 'B'} title={isFirstDocument ? 'Service details' : 'Document date'} subtitle={isFirstDocument ? 'Question 8' : 'Question 5'}>
-            {isFirstDocument ? (
-            <Field label="8. Details of service" help="Describe what happened with the court papers. Include relevant dates, locations, how the papers were delivered or discovered, and who received them, if anyone." required>
-              <textarea rows="6" value={form.circumstances} onChange={(e) => update('circumstances', e.target.value)} placeholder="Describe the circumstances in your own words" />
-            </Field>
-            ) : (
-            <Field label="5. Document date" help="Select the date to appear on your document." required>
-              <input type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
-            </Field>
-            )}
-          </FormSection>
-
-          {!isFirstDocument && (
-          <FormSection number="C" title="Certificate of service" subtitle="Questions 6–8">
-            <Field label="6. Delivery method" help="Select how you will deliver a copy to the plaintiff or their attorney." required>
-              <div className="choice-grid">
-                {['Hand delivery', 'U.S. Mail', 'Other'].map((method) => (
-                  <label className={`choice-card ${form.deliveryMethod === method ? 'active' : ''}`} key={method}>
-                    <input type="radio" name="delivery" value={method} checked={form.deliveryMethod === method} onChange={(e) => update('deliveryMethod', e.target.value)} />
-                    <span>{method}</span>
-                  </label>
-                ))}
-              </div>
-            </Field>
-            {form.deliveryMethod === 'Other' && (
-              <Field label="Delivery method details" help="Specify the other delivery method you will use." required>
-                <input value={form.deliveryOther} onChange={(e) => update('deliveryOther', e.target.value)} placeholder="Enter delivery method details" />
-              </Field>
-            )}
-            <Field label="7. Recipient name" help="Enter the name of the plaintiff or attorney who will receive the copy." required>
-              <input value={form.plaintiffAttorneyName} onChange={(e) => update('plaintiffAttorneyName', e.target.value)} placeholder="Person or organization name" />
-            </Field>
-            <Field label="8. Recipient address" help="Enter the full address of the plaintiff or attorney receiving the copy." required>
-              <textarea rows="3" value={form.plaintiffAttorneyAddress} onChange={(e) => update('plaintiffAttorneyAddress', e.target.value)} placeholder="Street address, suite or unit number, city, state, ZIP code" />
-            </Field>
-          </FormSection>
-          )}
+          <DocumentQuestions
+            type={selectedDoc}
+            form={form}
+            update={update}
+            sameAddress={sameAddress}
+            toggleSameAddress={toggleSameAddress}
+          />
 
           <section className="generate-panel">
+            <aside className="legal-disclaimer checkout-disclaimer" aria-label="Legal disclaimer">
+              <strong>Important Legal Disclaimer</strong>
+              <p>{DISCLAIMER}</p>
+            </aside>
             <label className="disclaimer-check">
               <input type="checkbox" checked={acceptedDisclaimer} onChange={(e) => setAcceptedDisclaimer(e.target.checked)} />
-              <span>I understand this is an educational self-help document tool and does not provide legal advice.</span>
+              <span>I have read and understand the legal disclaimer above.</span>
             </label>
             {error && <div className="error-box">{error}</div>}
             <button type="button" className="generate-button" onClick={generate}>Generate PDF <span>↓</span></button>
@@ -284,26 +220,5 @@ function App() {
   )
 }
 
-function FormSection({ number, title, subtitle, children }) {
-  return (
-    <section className="form-section">
-      <div className="section-heading">
-        <div className="section-letter">{number}</div>
-        <div><h2>{title}</h2><p>{subtitle}</p></div>
-      </div>
-      <div className="section-body">{children}</div>
-    </section>
-  )
-}
-
-function Field({ label, help, required, children }) {
-  return (
-    <label className="field">
-      <span className="field-label">{label}{required && <em>*</em>}</span>
-      {help && <span className="field-help">{help}</span>}
-      {children}
-    </label>
-  )
-}
 
 export default App

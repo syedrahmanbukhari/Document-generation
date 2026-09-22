@@ -17,6 +17,10 @@ button { cursor: pointer; }
 .brand-name { font-weight: 760; font-size: 17px; }
 .brand-sub { color: #b9c3d1; font-size: 12px; margin-top: 2px; }
 .topbar-pill, .progress-pill { margin-left: auto; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 8px 12px; font-size: 12px; color: #dce4ee; background: rgba(255,255,255,.05); }
+.legal-disclaimer { border: 2px solid #b87818; border-radius: 16px; background: #fff8e8; color: #2c2418; }
+.legal-disclaimer strong { display: block; color: #7a4a08; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; }
+.legal-disclaimer p { margin: 7px 0 0; font-size: 14px; font-weight: 600; line-height: 1.6; }
+.top-disclaimer { max-width: 1040px; margin: 24px auto 0; padding: 18px 22px; }
 .hero { max-width: 900px; margin: 0 auto; text-align: center; padding: 78px 24px 46px; }
 .eyebrow { text-transform: uppercase; letter-spacing: .16em; font-weight: 800; font-size: 12px; color: #9b6517; }
 .hero h1, .form-intro h1 { margin: 12px 0 14px; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(42px, 7vw, 70px); line-height: .98; letter-spacing: -.045em; color: #152236; }
@@ -31,6 +35,9 @@ button { cursor: pointer; }
 .document-icon span { display: block; height: 3px; margin: 0 0 13px; background: #1a2a42; border-radius: 999px; }
 .doc-card h2 { margin: 0 0 10px; font-family: Georgia, serif; font-size: 32px; color: #16243a; }
 .doc-card p { margin: 0 0 28px; line-height: 1.65; color: #65707e; max-width: 440px; }
+.document-price { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 18px; padding: 13px 15px; border: 1px solid #d7c6a7; border-radius: 12px; background: #faf3e5; color: #4f4434; }
+.document-price span { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.document-price strong { color: #17263f; font-family: Georgia, serif; font-size: 24px; }
 .doc-card button { position: relative; z-index: 2; border: 0; background: #17263f; color: #fff; border-radius: 12px; padding: 14px 18px; font-weight: 750; transition: transform .18s ease, background .18s ease; }
 .doc-card button:hover { transform: translateY(-2px); background: #223653; }
 .doc-card button span { margin-left: 12px; }
@@ -69,6 +76,7 @@ textarea { resize: vertical; }
 .choice-card.active { border-color: #b77b25; background: #fff9ec; box-shadow: 0 0 0 2px rgba(183,123,37,.12); }
 .generate-panel { padding: 26px; border-radius: 22px; background: #15243b; color: #fff; display: grid; gap: 16px; }
 .generate-panel .disclaimer-check { color: #d7dee7; }
+.checkout-disclaimer { padding: 18px 20px; }
 .generate-button { min-height: 54px; border: 0; border-radius: 13px; background: #d39b3c; color: #142034; font-weight: 900; font-size: 16px; }
 .generate-button span { margin-left: 10px; }
 .error-box { padding: 12px 14px; border-radius: 10px; background: #5d2423; color: #ffd8d5; font-size: 14px; }
@@ -83,5 +91,6 @@ textarea { resize: vertical; }
   .progress-pill { display: none; }
   .form-layout { padding: 34px 14px 60px; }
   .hero { padding-top: 56px; }
+  .top-disclaimer { margin: 14px 14px 0; padding: 16px; }
   .hero h1 { font-size: 48px; }
 }

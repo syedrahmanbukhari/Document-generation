@@ -2,22 +2,23 @@
 
 React + Vite website for two guided legal self-help document flows:
 
-- Document #1 — Motion to Dismiss / Quash (page 1)
-- Document #2 — Relief and Certificate of Service (page 2)
+- Document #1 — Motion to Quash (one-page reference layout)
+- Document #2 — Motion to Dismiss (motion and certificate in one two-page PDF)
 
 ## Implemented
 
 - Distinct document-selection landing page inspired by the supplied reference without copying it.
-- Separate questionnaires, each numbered 1–8 and validated independently.
-- Document #1 asks for court type, county, plaintiff, defendant, case number, full legal name, property address, and service details.
-- Document #2 asks for full legal name, mailing address, phone, email, document date, delivery method, recipient name, and recipient address. Additional delivery details appear when "Other" is selected.
-- Full legal name and date are reused throughout the PDF without exposing internal template references in the questionnaire.
+- Each document card displays a $50.00 price.
+- The required legal disclaimer appears prominently below the site header and again immediately above the final download action.
+- Separate questionnaires, numbered 1–6 for Quash and 1–18 for Dismiss, validated independently.
+- Quash asks for court type, county, plaintiff, defendant, case number, and first and last name. Its PDF follows the supplied two-column reference, including the procedural-rights notice. Annotation arrows and marker numbers are not printed.
+- Dismiss covers the court and case details, service circumstances, document date, motion signature name, contact information, delivery method, recipient details, service date, and certificate signature name.
+- Signature names and the service date are prefilled from the full legal name and document date, remain editable, and populate their respective locations. Additional delivery details appear when "Other" is selected.
 - Optional "mailing address same as property address" helper.
 - Delivery-method choices: Hand delivery / U.S. Mail / Other.
 - Client-side PDF generation with jsPDF.
-- Each document option downloads only its own part of the supplied template. The first contains the motion; the second contains the requested relief and certificate of service, with no leading blank page. Either questionnaire can be completed independently.
-- Reference markers 1–8 map to court type, county, plaintiff, defendant, case number, full legal name, property address, and service circumstances. Red annotations and placeholder brackets are omitted for completed answers.
-- Long answers wrap and continue onto additional pages with automatic page numbering.
+- Each option generates its own complete template. Dismiss includes both the motion and the requested relief/certificate of service. Either questionnaire can be completed independently.
+- Long Dismiss answers wrap onto continuation pages rather than being cut off. Quash fields wrap within the reference layout; input that cannot fit the page produces a clear error instead of a clipped PDF.
 - Responsive design suitable for Vercel deployment.
 - No backend or database required for the current workflow.
 
