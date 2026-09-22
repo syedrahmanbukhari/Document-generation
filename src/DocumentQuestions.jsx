@@ -33,7 +33,7 @@ export default function DocumentQuestions({ type, form, update, sameAddress, tog
                       {['Hand delivery', 'U.S. Mail', 'Other'].map(method => (
                         <label className={`choice-card ${form.deliveryMethod === method ? 'active' : ''}`} key={method}>
                           <input type="radio" name="delivery" value={method} checked={form.deliveryMethod === method} onChange={e => update('deliveryMethod', e.target.value)} required />
-                          <span>{method}</span>
+                          <span>{method === 'U.S. Mail' ? 'Us Mail' : method}</span>
                         </label>
                       ))}
                     </div>
