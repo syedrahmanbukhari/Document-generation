@@ -84,7 +84,7 @@ function createWriter(doc) {
     }
     paragraph(label, { indent: 16, gap: 4 })
   }
-  return { paragraph, columns, checkbox, nextPage, ensureSpace }
+  return { paragraph, columns, checkbox, ensureSpace }
 }
 
 function addMotion(writer, d) {
@@ -121,7 +121,6 @@ function addMotion(writer, d) {
 }
 
 function addReliefAndService(writer, d) {
-  writer.nextPage()
   writer.paragraph('WHEREFORE', { size: 12, style: 'bold', align: 'center', gap: 10 })
   writer.paragraph('Defendant respectfully requests that this Court:')
   const requests = [
@@ -159,21 +158,26 @@ export function createDocumentPdf(type, data) {
     throw new Error(`Unknown document type: ${type}`)
   }
   const doc = new jsPDF({ unit: 'pt', format: 'letter', orientation: 'portrait' })
+  const isFirstDocument = type === 'motion-to-quash'
   doc.setProperties({
-    title: 'Motion to Dismiss Dispossessory Proceeding for Improper Service',
+    title: isFirstDocument
+      ? 'Motion to Dismiss Dispossessory Proceeding for Improper Service'
+      : 'Requested Relief and Certificate of Service',
     subject: 'Educational self-help document',
     creator: 'Tenant Resource Document Center',
   })
-  // Both entry points use the supplied motion, requesting dismissal or,
-  // alternatively, quashing service. The former Quash placeholder is retired.
+  // Each selection downloads its own section instead of the combined motion.
   const writer = createWriter(doc)
-  addMotion(writer, data)
-  addReliefAndService(writer, data)
+  if (isFirstDocument) {
+    addMotion(writer, data)
+  } else {
+    addReliefAndService(writer, data)
+  }
   for (let page = 1; page <= doc.getNumberOfPages(); page += 1) {
     doc.setPage(page)
     doc.setFont('times', 'normal')
     doc.setFontSize(9)
-    doc.text(String(page), PAGE_W / 2, PAGE_H - 32, { align: 'center' })
+    doc.text(String(isFirstDocument ? page : page + 1), PAGE_W / 2, PAGE_H - 32, { align: 'center' })
   }
   return doc
 }

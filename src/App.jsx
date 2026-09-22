@@ -25,14 +25,14 @@ const docs = [
     id: 'motion-to-quash',
     number: '01',
     name: 'Motion to Dismiss / Quash',
-    description: 'Request dismissal for improper service or, alternatively, quash service using your answers.',
+    description: 'Prepare page 1 of your motion with the court information, case details, and circumstances of service.',
     badge: 'Document #1',
   },
   {
     id: 'motion-to-dismiss',
     number: '02',
-    name: 'Motion to Dismiss',
-    description: 'Generate the improper-service motion and certificate of service using your answers.',
+    name: 'Relief and Certificate of Service',
+    description: 'Prepare page 2 with the requested relief, your contact information, and certificate of service.',
     badge: 'Document #2',
   },
 ]
@@ -45,6 +45,7 @@ function App() {
   const [error, setError] = useState('')
 
   const selected = useMemo(() => docs.find((d) => d.id === selectedDoc), [selectedDoc])
+  const isFirstDocument = selectedDoc === 'motion-to-quash'
 
   const update = (key, value) => {
     setError('')
@@ -62,6 +63,8 @@ function App() {
 
   const openDocument = (id) => {
     setSelectedDoc(id)
+    setAcceptedDisclaimer(false)
+    setError('')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -72,20 +75,22 @@ function App() {
   }
 
   const validate = () => {
-    const required = [
+    const required = isFirstDocument ? [
       ['courtType', 'Court type'], ['county', 'County'], ['plaintiff', 'Plaintiff name'], ['defendant', 'Defendant name'],
       ['caseNumber', 'Case number'], ['fullName', 'Full legal name'], ['propertyAddress', 'Property address'],
+      ['circumstances', 'Details of service'],
+    ] : [
+      ['fullName', 'Full legal name'],
       ['mailingAddress', 'Mailing address'], ['phone', 'Phone number'], ['email', 'Email address'],
-      ['circumstances', 'Details of service'], ['date', 'Document date'], ['deliveryMethod', 'Delivery method'],
-      ['plaintiffAttorneyName', "Plaintiff or plaintiff's attorney name"],
-      ['plaintiffAttorneyAddress', "Plaintiff or plaintiff's attorney address"],
+      ['date', 'Document date'], ['deliveryMethod', 'Delivery method'],
+      ['plaintiffAttorneyName', 'Recipient name'], ['plaintiffAttorneyAddress', 'Recipient address'],
     ]
     const missing = required.find(([key]) => !String(form[key] || '').trim())
     if (missing) {
       setError(`Please complete: ${missing[1]}.`)
       return false
     }
-    if (form.deliveryMethod === 'Other' && !form.deliveryOther.trim()) {
+    if (!isFirstDocument && form.deliveryMethod === 'Other' && !form.deliveryOther.trim()) {
       setError('Please provide details of your delivery method.')
       return false
     }
@@ -117,7 +122,7 @@ function App() {
           <section className="hero">
             <div className="eyebrow">Guided document preparation</div>
             <h1>Choose a document to begin.</h1>
-            <p>Complete the guided questionnaire with your case details to prepare a personalized PDF document.</p>
+            <p>Select the page you need and complete its questionnaire to download a separate PDF.</p>
           </section>
 
           <section className="document-grid">
@@ -166,11 +171,12 @@ function App() {
       <main className="form-layout">
         <section className="form-intro">
           <div className="eyebrow">{selected.badge}</div>
-          <h1>Enter your case details.</h1>
+          <h1>{isFirstDocument ? 'Enter your case details.' : 'Complete your service information.'}</h1>
           <p>Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.</p>
         </section>
 
         <form className="question-form" onSubmit={(e) => e.preventDefault()}>
+          {isFirstDocument && (
           <FormSection number="A" title="Court information" subtitle="Questions 1–5">
             <Field label="1. Court type" help="Select the court listed on your case documents." required>
               <select value={form.courtType} onChange={(e) => update('courtType', e.target.value)}>
@@ -193,42 +199,54 @@ function App() {
               <input value={form.caseNumber} onChange={(e) => update('caseNumber', e.target.value)} placeholder="Case number" />
             </Field>
           </FormSection>
+          )}
 
-          <FormSection number="B" title="Your information" subtitle="Questions 6–10">
-            <Field label="6. Full legal name" help="Enter your complete legal name, including any middle names." required>
+          <FormSection number={isFirstDocument ? 'B' : 'A'} title="Your information" subtitle={isFirstDocument ? 'Questions 6–7' : 'Questions 1–4'}>
+            <Field label={`${isFirstDocument ? 6 : 1}. Full legal name`} help="Enter your complete legal name, including any middle names." required>
               <input value={form.fullName} onChange={(e) => update('fullName', e.target.value)} placeholder="Full legal name" />
             </Field>
+            {isFirstDocument ? (
             <Field label="7. Property address" help="Enter the full address of the property involved in this case." required>
               <textarea rows="2" value={form.propertyAddress} onChange={(e) => update('propertyAddress', e.target.value)} placeholder="Street address, unit number, city, state, ZIP code" />
             </Field>
+            ) : (
+            <>
+            {form.propertyAddress.trim() && (
             <label className="check-row">
               <input type="checkbox" checked={sameAddress} onChange={(e) => toggleSameAddress(e.target.checked)} />
               <span>My mailing address is the same as the property address.</span>
             </label>
-            <Field label="8. Mailing address" help="Enter the address where you receive correspondence." required>
+            )}
+            <Field label="2. Mailing address" help="Enter the address where you receive correspondence." required>
               <textarea rows="2" value={form.mailingAddress} onChange={(e) => update('mailingAddress', e.target.value)} placeholder="Street address, unit number, city, state, ZIP code" />
             </Field>
             <div className="two-col">
-              <Field label="9. Phone number" required>
+              <Field label="3. Phone number" required>
                 <input value={form.phone} onChange={(e) => update('phone', e.target.value)} placeholder="Phone number" />
               </Field>
-              <Field label="10. Email address" required>
+              <Field label="4. Email address" required>
                 <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="name@example.com" />
               </Field>
             </div>
+            </>
+            )}
           </FormSection>
 
-          <FormSection number="C" title="Service details" subtitle="Questions 11–12">
-            <Field label="11. Details of service" help="Describe what happened with the court papers. Include relevant dates, locations, how the papers were delivered or discovered, and who received them, if anyone." required>
+          <FormSection number={isFirstDocument ? 'C' : 'B'} title={isFirstDocument ? 'Service details' : 'Document date'} subtitle={isFirstDocument ? 'Question 8' : 'Question 5'}>
+            {isFirstDocument ? (
+            <Field label="8. Details of service" help="Describe what happened with the court papers. Include relevant dates, locations, how the papers were delivered or discovered, and who received them, if anyone." required>
               <textarea rows="6" value={form.circumstances} onChange={(e) => update('circumstances', e.target.value)} placeholder="Describe the circumstances in your own words" />
             </Field>
-            <Field label="12. Document date" help="Select the date to appear on your document." required>
+            ) : (
+            <Field label="5. Document date" help="Select the date to appear on your document." required>
               <input type="date" value={form.date} onChange={(e) => update('date', e.target.value)} />
             </Field>
+            )}
           </FormSection>
 
-          <FormSection number="D" title="Certificate of service" subtitle="Questions 13–15">
-            <Field label="13. Delivery method" help="Select how you will deliver a copy to the plaintiff or their attorney." required>
+          {!isFirstDocument && (
+          <FormSection number="C" title="Certificate of service" subtitle="Questions 6–8">
+            <Field label="6. Delivery method" help="Select how you will deliver a copy to the plaintiff or their attorney." required>
               <div className="choice-grid">
                 {['Hand delivery', 'U.S. Mail', 'Other'].map((method) => (
                   <label className={`choice-card ${form.deliveryMethod === method ? 'active' : ''}`} key={method}>
@@ -243,13 +261,14 @@ function App() {
                 <input value={form.deliveryOther} onChange={(e) => update('deliveryOther', e.target.value)} placeholder="Enter delivery method details" />
               </Field>
             )}
-            <Field label="14. Recipient name" help="Enter the name of the plaintiff or attorney who will receive the copy." required>
+            <Field label="7. Recipient name" help="Enter the name of the plaintiff or attorney who will receive the copy." required>
               <input value={form.plaintiffAttorneyName} onChange={(e) => update('plaintiffAttorneyName', e.target.value)} placeholder="Person or organization name" />
             </Field>
-            <Field label="15. Recipient address" help="Enter the full address of the plaintiff or attorney receiving the copy." required>
+            <Field label="8. Recipient address" help="Enter the full address of the plaintiff or attorney receiving the copy." required>
               <textarea rows="3" value={form.plaintiffAttorneyAddress} onChange={(e) => update('plaintiffAttorneyAddress', e.target.value)} placeholder="Street address, suite or unit number, city, state, ZIP code" />
             </Field>
           </FormSection>
+          )}
 
           <section className="generate-panel">
             <label className="disclaimer-check">
