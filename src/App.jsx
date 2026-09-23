@@ -142,7 +142,10 @@ function App() {
                   <div className="document-icon" aria-hidden="true">
                     <span></span><span></span><span></span>
                   </div>
-                  <strong className="document-price" aria-label={`Price ${doc.price}`}>{doc.price}</strong>
+                  <div className="document-price" aria-label={`Document price ${doc.price}`}>
+                    <span>Document price</span>
+                    <strong>{doc.price}</strong>
+                  </div>
                 </div>
                 <h2>{doc.name}</h2>
                 <p>{doc.description}</p>
