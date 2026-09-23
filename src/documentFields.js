@@ -22,7 +22,7 @@ export const documentSections = {
     { title: 'Case and service details', fields: [
       { key: 'fullName', label: 'Your First & Last Name?' },
       { key: 'propertyAddress', label: 'Address?', type: 'textarea', placeholder: 'Street address, unit number, city, state, ZIP code' },
-      { key: 'circumstances', label: 'Describe exactly what happened (You never received papers, papers were posted on your door but were not mailed, papers were given to someone who doesn’t live in the home)', type: 'textarea', rows: 6, placeholder: 'Describe exactly what happened' },
+      { key: 'circumstances', label: 'Describe exactly what happened (You never received papers, papers were posted on your door but were not mailed, papers were given to someone who doesn’t live in the home)', help: 'Be sure to include specific dates & details', type: 'textarea', rows: 6, placeholder: 'Describe exactly what happened' },
     ] },
     { title: 'Document and contact information', fields: [
       { key: 'date', label: 'Date?', type: 'date' },

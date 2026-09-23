@@ -32,16 +32,14 @@ const docs = [
     id: 'motion-to-quash',
     number: '01',
     name: 'Motion to Quash',
-    description: 'Answer six questions to prepare your Motion to Quash Service.',
-    badge: 'Document #1',
+    description: 'A request asking the court to stop or dismiss an eviction proceeding because there is a legal or procedural defect.',
     price: '$50.00',
   },
   {
     id: 'motion-to-dismiss',
     number: '02',
     name: 'Motion to Dismiss',
-    description: 'Prepare your motion, requested relief, and certificate of service in one PDF.',
-    badge: 'Document #2',
+    description: 'A formal request asking a court to dismiss a lawsuit or a particular claim before the case proceeds further.',
     price: '$50.00',
   },
 ]
@@ -130,7 +128,7 @@ function App() {
         <main>
           <section className="hero">
             <div className="eyebrow">Guided document preparation</div>
-            <h1>Choose a document to begin.</h1>
+            <h1>Choose a document to begin</h1>
             <p>Choose your document and complete the questionnaire to prepare your personalized PDF.</p>
           </section>
 
@@ -139,17 +137,15 @@ function App() {
               <article className="doc-card" key={doc.id}>
                 <div className="card-topline">
                   <span className="card-number">{doc.number}</span>
-                  <span className="card-badge">{doc.badge}</span>
                 </div>
-                <div className="document-icon" aria-hidden="true">
-                  <span></span><span></span><span></span>
+                <div className="document-summary">
+                  <div className="document-icon" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <strong className="document-price" aria-label={`Price ${doc.price}`}>{doc.price}</strong>
                 </div>
                 <h2>{doc.name}</h2>
                 <p>{doc.description}</p>
-                <div className="document-price" aria-label={`Price ${doc.price}`}>
-                  <span>Document price</span>
-                  <strong>{doc.price}</strong>
-                </div>
                 <button onClick={() => openDocument(doc.id)}>Start questionnaire <span>→</span></button>
               </article>
             ))}
@@ -188,8 +184,6 @@ function App() {
 
       <main className="form-layout">
         <section className="form-intro">
-          <div className="eyebrow">{selected.badge}</div>
-          <h1>Enter your case details.</h1>
           <p>Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.</p>
         </section>
 
