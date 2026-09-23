@@ -143,7 +143,6 @@ function App() {
                     <span></span><span></span><span></span>
                   </div>
                   <div className="document-price" aria-label={`Document price ${doc.price}`}>
-                    <span>Document price</span>
                     <strong>{doc.price}</strong>
                   </div>
                 </div>

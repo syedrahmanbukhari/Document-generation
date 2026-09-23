@@ -35,8 +35,7 @@ button { cursor: pointer; }
 .document-icon span { display: block; height: 3px; margin: 0 0 13px; background: #1a2a42; border-radius: 999px; }
 .doc-card h2 { margin: 0 0 10px; font-family: Georgia, serif; font-size: 32px; color: #16243a; }
 .doc-card p { margin: 0 0 28px; line-height: 1.65; color: #65707e; max-width: 440px; }
-.document-price { padding: 13px 15px; border: 1px solid #d7c6a7; border-radius: 12px; background: #faf3e5; color: #17263f; }
-.document-price span { display: block; margin-bottom: 5px; color: #4f4434; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.document-price { display: grid; place-items: center; margin-left: auto; padding: 13px 15px; border: 1px solid #d7c6a7; border-radius: 12px; background: #faf3e5; color: #17263f; }
 .document-price strong { font-family: Georgia, serif; font-size: clamp(24px, 4vw, 38px); white-space: nowrap; }
 .doc-card button { position: relative; z-index: 2; border: 0; background: #17263f; color: #fff; border-radius: 12px; padding: 14px 18px; font-weight: 750; transition: transform .18s ease, background .18s ease; }
 .doc-card button:hover { transform: translateY(-2px); background: #223653; }
@@ -86,7 +85,8 @@ textarea { resize: vertical; }
 @media (max-width: 760px) {
   .topbar { padding: 0 16px; height: 78px; }
   .document-grid { grid-template-columns: 1fr; }
-  .document-summary { gap: 16px; }
+  .document-summary { gap: 12px; }
+  .document-price { padding: 10px 12px; }
   .how-it-works { grid-template-columns: 1fr; }
   .two-col, .choice-grid { grid-template-columns: 1fr; }
   .progress-pill { display: none; }
