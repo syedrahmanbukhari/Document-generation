@@ -30,12 +30,12 @@ button { cursor: pointer; }
 .doc-card::after { content: ''; position: absolute; inset: auto -80px -100px auto; width: 240px; height: 240px; border-radius: 50%; background: #efe3ca; opacity: .55; }
 .card-topline { display: flex; align-items: center; justify-content: space-between; }
 .card-number { font-family: Georgia, serif; font-size: 42px; color: #d39b3c; font-weight: 700; }
-.document-summary { position: relative; z-index: 1; display: flex; align-items: center; gap: 28px; margin: 34px 0 26px; }
+.document-summary { position: relative; z-index: 1; display: grid; grid-template-columns: 92px minmax(0, 1fr); align-items: center; gap: 12px; margin: 34px -28px 26px 0; }
 .document-icon { flex-shrink: 0; width: 92px; height: 112px; border: 2px solid #1a2a42; border-radius: 12px; padding: 24px 18px; transform: rotate(-2deg); background: linear-gradient(145deg, #fff, #f4efe4); box-shadow: 9px 9px 0 #d39b3c; }
 .document-icon span { display: block; height: 3px; margin: 0 0 13px; background: #1a2a42; border-radius: 999px; }
 .doc-card h2 { margin: 0 0 10px; font-family: Georgia, serif; font-size: 32px; color: #16243a; }
 .doc-card p { margin: 0 0 28px; line-height: 1.65; color: #65707e; max-width: 440px; }
-.document-price { position: absolute; left: 50%; transform: translateX(-50%); display: grid; place-items: center; padding: 13px 15px; border: 1px solid #d7c6a7; border-radius: 12px; background: #faf3e5; color: #17263f; }
+.document-price { justify-self: center; display: grid; place-items: center; padding: 13px 15px; border: 1px solid #d7c6a7; border-radius: 12px; background: #faf3e5; color: #17263f; }
 .document-price strong { font-family: Georgia, serif; font-size: clamp(24px, 4vw, 38px); white-space: nowrap; }
 .doc-card button { position: relative; z-index: 2; border: 0; background: #17263f; color: #fff; border-radius: 12px; padding: 14px 18px; font-weight: 750; transition: transform .18s ease, background .18s ease; }
 .doc-card button:hover { transform: translateY(-2px); background: #223653; }
@@ -85,7 +85,6 @@ textarea { resize: vertical; }
 @media (max-width: 760px) {
   .topbar { padding: 0 16px; height: 78px; }
   .document-grid { grid-template-columns: 1fr; }
-  .document-summary { gap: 12px; }
   .document-price { padding: 10px 12px; }
   .how-it-works { grid-template-columns: 1fr; }
   .two-col, .choice-grid { grid-template-columns: 1fr; }
@@ -94,9 +93,4 @@ textarea { resize: vertical; }
   .hero { padding-top: 56px; }
   .top-disclaimer { margin: 14px 14px 0; padding: 16px; }
   .hero h1 { font-size: 48px; }
-}
-
-@media (max-width: 420px) {
-  .document-icon { width: 44px; height: 60px; padding: 12px 8px; }
-  .document-icon span { margin-bottom: 7px; }
 }
