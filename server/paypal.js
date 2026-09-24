@@ -1,6 +1,7 @@
 import { createHash, createHmac, timingSafeEqual } from 'node:crypto'
 import { createDocumentPdf } from '../src/pdf/generateDocument.js'
 import { documentSections, validateAnswers } from '../src/documentFields.js'
+import { addPreviewWatermark } from './watermark.js'
 
 const PRICE = '50.00'
 const CURRENCY = 'USD'
@@ -167,6 +168,21 @@ export function createOrder(req, res) {
     })
     if (!order.id) throw new CheckoutError('Unable to create the PayPal order.', 502)
     sendJson(res, 200, { orderId: order.id, checkoutToken: makeToken(order.id, type, answers, settings.secret) })
+  })
+}
+
+export function previewDocument(req, res) {
+  return run(res, async () => {
+    if (req.method !== 'POST') throw new CheckoutError('Method not allowed.', 405)
+    const { type, data } = await bodyOf(req)
+    const answers = checkedAnswers(type, data)
+    const pdf = addPreviewWatermark(createDocumentPdf(type, answers))
+    res.statusCode = 200
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', `inline; filename="${type}-preview.pdf"`)
+    res.setHeader('Cache-Control', 'no-store')
+    res.setHeader('X-Content-Type-Options', 'nosniff')
+    res.end(Buffer.from(pdf.output('arraybuffer')))
   })
 }
 

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import DocumentQuestions from './DocumentQuestions'
+import DocumentPreview from './DocumentPreview'
 import PayPalCheckout from './PayPalCheckout'
 import { validateAnswers } from './documentFields'
 
@@ -106,7 +107,7 @@ function App() {
     if (!validate()) return
     setError('')
     setCheckoutAnswers({ ...form })
-    requestAnimationFrame(() => document.getElementById('checkout')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    requestAnimationFrame(() => document.getElementById('document-preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }
 
   if (!selectedDoc) {
@@ -157,7 +158,7 @@ function App() {
           <section className="how-it-works">
             <div><strong>01</strong><span>Choose a document</span></div>
             <div><strong>02</strong><span>Answer the guided questions</span></div>
-            <div><strong>03</strong><span>Pay securely and download your PDF</span></div>
+            <div><strong>03</strong><span>Preview, pay, and download your PDF</span></div>
           </section>
 
           <section className="disclaimer-card">
@@ -187,7 +188,7 @@ function App() {
 
       <main className="form-layout">
         <section className="form-intro">
-          <p>{checkoutAnswers ? 'Review the total and complete your payment to download the document.' : 'Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.'}</p>
+          <p>{checkoutAnswers ? 'Review your document below, then complete your payment to download the PDF without the watermark.' : 'Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.'}</p>
         </section>
 
         <form className="question-form" onSubmit={(e) => e.preventDefault()}>
@@ -198,6 +199,8 @@ function App() {
             sameAddress={sameAddress}
             toggleSameAddress={toggleSameAddress}
           />}
+
+          {checkoutAnswers && <DocumentPreview type={selectedDoc} answers={checkoutAnswers} />}
 
           <section className="generate-panel" id="checkout">
             <aside className="legal-disclaimer checkout-disclaimer" aria-label="Legal disclaimer">

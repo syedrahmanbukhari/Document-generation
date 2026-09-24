@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { after, before, test } from 'node:test'
-import { captureOrder, checkoutConfig, createOrder } from '../server/paypal.js'
+import { captureOrder, checkoutConfig, createOrder, previewDocument } from '../server/paypal.js'
 
 const originalFetch = global.fetch
 const originalEnv = {
@@ -79,6 +79,24 @@ test('checkout configuration fails closed without credentials', async () => {
   process.env.PAYPAL_CLIENT_SECRET = 'test-secret'
 })
 
+test('both documents can be previewed with a watermark before PayPal is configured', async () => {
+  delete process.env.PAYPAL_CLIENT_SECRET
+  for (const [type, data, expectedPages] of [
+    ['motion-to-quash', answers, 1],
+    ['motion-to-dismiss', dismissAnswers, 2],
+  ]) {
+    const preview = await call(previewDocument, { type, data })
+    assert.equal(preview.statusCode, 200)
+    assert.equal(preview.headers['content-type'], 'application/pdf')
+    assert.match(preview.headers['content-disposition'], /inline/)
+    const content = Buffer.from(preview.body).toString('latin1')
+    assert.ok(content.startsWith('%PDF'))
+    assert.equal((content.match(/TENANT RESOURCE CENTER/g) || []).length, expectedPages * 3)
+    assert.equal((content.match(/PREVIEW/g) || []).length, expectedPages * 3)
+  }
+  process.env.PAYPAL_CLIENT_SECRET = 'test-secret'
+})
+
 test('server creates exactly a $50.00 order and releases a PDF only after verified capture', async () => {
   let captured = false
   global.fetch = async (url, options) => {
@@ -111,6 +129,7 @@ test('server creates exactly a $50.00 order and releases a PDF only after verifi
   assert.equal(paid.statusCode, 200)
   assert.equal(paid.headers['content-type'], 'application/pdf')
   assert.equal(Buffer.from(paid.body).subarray(0, 4).toString(), '%PDF')
+  assert.ok(!Buffer.from(paid.body).toString('latin1').includes('TENANT RESOURCE CENTER'))
   assert.equal(captured, true)
 
   const retry = await call(captureOrder, { orderId, checkoutToken, type: 'motion-to-quash', data: answers })
@@ -149,4 +168,5 @@ test('the second document uses the same $50.00 gate', async () => {
   })
   assert.equal(paid.statusCode, 200)
   assert.equal(Buffer.from(paid.body).subarray(0, 4).toString(), '%PDF')
+  assert.ok(!Buffer.from(paid.body).toString('latin1').includes('TENANT RESOURCE CENTER'))
 })

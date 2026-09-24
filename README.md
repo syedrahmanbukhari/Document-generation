@@ -1,6 +1,6 @@
 # Tenant Resource Document Center
 
-Two guided document flows: Motion to Quash (six questions, one-page PDF) and Motion to Dismiss (18 questions, two-page PDF). Each document costs **$50.00 USD**.
+Two guided document flows: Motion to Quash (six questions, one-page PDF) and Motion to Dismiss (18 questions, two-page PDF). Each document costs **$50.00 USD**. After completing a questionnaire, the customer can review a watermarked PDF preview before paying. The watermark is absent from the PDF released after verified payment.
 
 ## PayPal setup
 
