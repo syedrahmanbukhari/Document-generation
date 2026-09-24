@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { generateDocumentPdf } from './pdf/generateDocument'
 import DocumentQuestions from './DocumentQuestions'
+import PayPalCheckout from './PayPalCheckout'
 import { validateAnswers } from './documentFields'
 
 const DISCLAIMER = 'This website is a self-help document software tool, not a law firm. We do not provide legal advice, review your answers for legal sufficiency, or represent you in court. Using this website does not create an attorney–client relationship.'
@@ -50,6 +50,7 @@ function App() {
   const [sameAddress, setSameAddress] = useState(false)
   const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false)
   const [error, setError] = useState('')
+  const [checkoutAnswers, setCheckoutAnswers] = useState(null)
 
   const selected = useMemo(() => docs.find((d) => d.id === selectedDoc), [selectedDoc])
 
@@ -75,6 +76,7 @@ function App() {
 
   const openDocument = (id) => {
     setSelectedDoc(id)
+    setCheckoutAnswers(null)
     setAcceptedDisclaimer(false)
     setError('')
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -82,6 +84,7 @@ function App() {
 
   const goHome = () => {
     setSelectedDoc(null)
+    setCheckoutAnswers(null)
     setError('')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -93,7 +96,7 @@ function App() {
       return false
     }
     if (!acceptedDisclaimer) {
-      setError('Please acknowledge the educational-use statement before generating your PDF.')
+      setError('Please acknowledge the legal disclaimer before continuing to payment.')
       return false
     }
     return true
@@ -101,11 +104,9 @@ function App() {
 
   const generate = () => {
     if (!validate()) return
-    try {
-      generateDocumentPdf(selectedDoc, form)
-    } catch (error) {
-      setError(error.message || 'Unable to generate your PDF. Please try again.')
-    }
+    setError('')
+    setCheckoutAnswers({ ...form })
+    requestAnimationFrame(() => document.getElementById('checkout')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }
 
   if (!selectedDoc) {
@@ -156,7 +157,7 @@ function App() {
           <section className="how-it-works">
             <div><strong>01</strong><span>Choose a document</span></div>
             <div><strong>02</strong><span>Answer the guided questions</span></div>
-            <div><strong>03</strong><span>Generate your PDF</span></div>
+            <div><strong>03</strong><span>Pay securely and download your PDF</span></div>
           </section>
 
           <section className="disclaimer-card">
@@ -186,29 +187,30 @@ function App() {
 
       <main className="form-layout">
         <section className="form-intro">
-          <p>Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.</p>
+          <p>{checkoutAnswers ? 'Review the total and complete your payment to download the document.' : 'Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.'}</p>
         </section>
 
         <form className="question-form" onSubmit={(e) => e.preventDefault()}>
-          <DocumentQuestions
+          {!checkoutAnswers && <DocumentQuestions
             type={selectedDoc}
             form={form}
             update={update}
             sameAddress={sameAddress}
             toggleSameAddress={toggleSameAddress}
-          />
+          />}
 
-          <section className="generate-panel">
+          <section className="generate-panel" id="checkout">
             <aside className="legal-disclaimer checkout-disclaimer" aria-label="Legal disclaimer">
               <strong>Important Legal Disclaimer</strong>
               <p>{DISCLAIMER}</p>
             </aside>
-            <label className="disclaimer-check">
+            {!checkoutAnswers && <label className="disclaimer-check">
               <input type="checkbox" checked={acceptedDisclaimer} onChange={(e) => setAcceptedDisclaimer(e.target.checked)} />
               <span>I have read and understand the legal disclaimer above.</span>
-            </label>
+            </label>}
             {error && <div className="error-box">{error}</div>}
-            <button type="button" className="generate-button" onClick={generate}>Generate PDF <span>↓</span></button>
+            {checkoutAnswers ? <PayPalCheckout type={selectedDoc} documentName={selected.name} answers={checkoutAnswers} onEdit={() => setCheckoutAnswers(null)} />
+              : <button type="button" className="generate-button" onClick={generate}>Continue to payment <span>→</span></button>}
           </section>
         </form>
       </main>

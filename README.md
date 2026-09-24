@@ -1,38 +1,23 @@
 # Tenant Resource Document Center
 
-React + Vite website for two guided legal self-help document flows:
+Two guided document flows: Motion to Quash (six questions, one-page PDF) and Motion to Dismiss (18 questions, two-page PDF). Each document costs **$50.00 USD**.
 
-- Document #1 — Motion to Quash (one-page reference layout)
-- Document #2 — Motion to Dismiss (motion and certificate in one two-page PDF)
+## PayPal setup
 
-## Implemented
+The site creates a $50.00 order on the server, shows PayPal checkout after the form is completed, and releases the generated PDF only after the server captures and verifies the payment. The PayPal client secret stays on the server. The site has no database; a signed checkout token binds the approved order to the selected document and answers. An already completed order can be used to retry its PDF download while that token is valid.
 
-- Distinct document-selection landing page inspired by the supplied reference without copying it.
-- Each document card displays a $50.00 price.
-- The required legal disclaimer appears prominently below the site header and again immediately above the final download action.
-- Separate questionnaires, numbered 1–6 for Quash and 1–18 for Dismiss, validated independently.
-- Quash asks for court type, county, plaintiff, defendant, case number, and first and last name. Its PDF follows the supplied two-column reference, including the procedural-rights notice. Annotation arrows and marker numbers are not printed.
-- Dismiss covers the court and case details, service circumstances, document date, motion signature name, contact information, delivery method, recipient details, service date, and certificate signature name.
-- Signature names and the service date are prefilled from the full legal name and document date, remain editable, and populate their respective locations. Additional delivery details appear when "Other" is selected.
-- Optional "mailing address same as property address" helper.
-- Delivery-method choices: Hand delivery / U.S. Mail / Other.
-- Client-side PDF generation with jsPDF.
-- Each option generates its own complete template. Dismiss includes both the motion and the requested relief/certificate of service. Either questionnaire can be completed independently.
-- Long Dismiss answers wrap onto continuation pages rather than being cut off. Quash fields wrap within the reference layout; input that cannot fit the page produces a clear error instead of a clipped PDF.
-- Responsive design suitable for Vercel deployment.
-- No backend or database required for the current workflow.
+1. Create a PayPal Business account and a REST app in the [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/applications/sandbox). For testing, use the sandbox client ID and secret; for production, use live credentials for the Business account that should receive payments.
+2. Copy `.env.example` to `.env.local`, add `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET`, and leave `PAYPAL_ENV=sandbox` while testing. Optionally set `PAYPAL_MERCHANT_ID` to the receiving Business account's merchant ID for an additional payee check. Never put the client secret in a `VITE_` variable or commit it.
+3. Run `npm install` and `npm run dev`. Vite serves the checkout API locally. Use a sandbox buyer account to test a complete purchase and PDF download.
+4. Deploy to Vercel as a Vite project. Set the same variables in the project's server-side Environment Variables. Set `PAYPAL_ENV=live` and use live credentials when ready to take real payments. The `api/` routes run as Vercel Functions; the Vite static build alone cannot process payments.
 
-## Run locally
+The site fails closed when credentials are absent: customers cannot download PDFs for free. PayPal determines which funding methods are available to each buyer.
 
-```bash
-npm install
-npm run dev
-```
-
-## Production build
+## Build and test
 
 ```bash
 npm run build
+node --test tests/paypal.test.js
 ```
 
-Deploy the repository to Vercel as a standard Vite project. No special server configuration is required for this version.
+The server uses PayPal Orders v2 to create and capture orders. See the [PayPal Standard Checkout integration guide](https://developer.paypal.com/platforms/checkout/standard/integrate/) for the merchant account and REST app setup.
