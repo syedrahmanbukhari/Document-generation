@@ -81,11 +81,11 @@ textarea { resize: vertical; }
 .error-box { padding: 12px 14px; border-radius: 10px; background: #5d2423; color: #ffd8d5; font-size: 14px; }
 .template-note { padding: 13px 14px; border-radius: 10px; background: rgba(255,255,255,.08); color: #ced7e2; font-size: 13px; line-height: 1.55; border: 1px solid rgba(255,255,255,.12); }
 .privacy-line { margin: 0; text-align: center; color: #98a5b7; font-size: 12px; }
-.paypal-checkout { display: grid; gap: 16px; }
+.paypal-checkout { display: grid; gap: 16px; width: min(100%, 750px); margin-inline: auto; }
 .checkout-summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 18px; border: 1px solid rgba(255,255,255,.2); border-radius: 12px; font-size: 16px; }
 .checkout-summary strong { color: #e9bd72; white-space: nowrap; }
-.checkout-status { margin: 0; color: #e2e8ef; }
-.paypal-buttons { min-height: 44px; position: relative; z-index: 1; }
+.checkout-status { margin: 0; color: #e2e8ef; text-align: center; }
+.paypal-buttons { min-height: 44px; width: 100%; position: relative; z-index: 1; }
 .retry-button, .edit-answers { width: 100%; min-height: 44px; border: 1px solid rgba(255,255,255,.3); border-radius: 10px; background: transparent; color: #fff; font-weight: 700; }
 .retry-button:hover, .edit-answers:hover { background: rgba(255,255,255,.08); }
 .retry-button:disabled, .edit-answers:disabled { opacity: .55; cursor: wait; }
