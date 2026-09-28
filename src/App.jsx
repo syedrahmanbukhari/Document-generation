@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import DocumentQuestions from './DocumentQuestions'
 import DocumentPreview from './DocumentPreview'
 import PayPalCheckout from './PayPalCheckout'
+import DocumentDownload from './DocumentDownload'
 import { validateAnswers } from './documentFields'
 
 const DISCLAIMER = 'This website is a self-help document software tool, not a law firm. We do not provide legal advice, review your answers for legal sufficiency, or represent you in court. Using this website does not create an attorney–client relationship.'
@@ -110,6 +111,8 @@ function App() {
     requestAnimationFrame(() => document.getElementById('document-preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }
 
+  if (window.location.pathname.replace(/\/$/, '') === '/download') return <DocumentDownload disclaimer={DISCLAIMER} />
+
   if (!selectedDoc) {
     return (
       <div className="site-shell">
@@ -158,7 +161,7 @@ function App() {
           <section className="how-it-works">
             <div><strong>01</strong><span>Choose a document</span></div>
             <div><strong>02</strong><span>Answer the guided questions</span></div>
-            <div><strong>03</strong><span>Preview, pay, and receive your PDF by email</span></div>
+            <div><strong>03</strong><span>Preview, pay, and download your PDF</span></div>
           </section>
 
           <section className="disclaimer-card">
@@ -188,7 +191,7 @@ function App() {
 
       <main className="form-layout">
         <section className="form-intro">
-          <p>{checkoutAnswers ? 'Review your document below, then follow the payment and email delivery instructions to receive your PDF without the watermark.' : 'Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.'}</p>
+          <p>{checkoutAnswers ? 'Review your document below, then complete checkout with PayPal. Return to the document page using the same browser.' : 'Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.'}</p>
         </section>
 
         <form className="question-form" onSubmit={(e) => e.preventDefault()}>

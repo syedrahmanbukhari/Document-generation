@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 import { previewDocument } from '../server/documents.js'
 import { fulfillDocument } from '../scripts/fulfill-document.mjs'
 import { HOSTED_BUTTONS, loadHostedPayPal, PAYPAL_SDK_URL } from '../src/paypalHosted.js'
+import { saveDownloadRequest, readDownloadRequest, clearDownloadRequest } from '../src/downloadRequest.js'
 
 const answers = {
   courtType: 'Magistrate', county: 'Fulton', plaintiff: 'Landlord', defendant: 'Tenant',
@@ -19,6 +20,27 @@ const dismissAnswers = {
   deliveryOther: '', plaintiffAttorneyName: 'Landlord', plaintiffAttorneyAddress: '456 Court St, Atlanta, GA',
   serviceDate: '2026-09-24', serviceSignatureName: 'Tenant Person',
 }
+
+test('return pages restore only the selected document and reject missing, expired or invalid saved answers', () => {
+  const values = new Map()
+  const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key) }
+  assert.equal(readDownloadRequest('motion-to-quash', storage), null)
+  saveDownloadRequest('motion-to-quash', { ...answers, email: 'not part of this document' }, storage)
+  saveDownloadRequest('motion-to-dismiss', dismissAnswers, storage)
+  assert.deepEqual(readDownloadRequest('motion-to-quash', storage).data, answers)
+  assert.deepEqual(readDownloadRequest(null, storage).data, dismissAnswers)
+  assert.equal(readDownloadRequest('unknown', storage), null)
+  clearDownloadRequest('motion-to-dismiss', storage)
+  assert.equal(readDownloadRequest(null, storage), null)
+  assert.ok(readDownloadRequest('motion-to-quash', storage))
+  const expired = { type: 'motion-to-quash', data: answers, expiresAt: Date.now() - 1 }
+  storage.setItem('trc:download:motion-to-quash', JSON.stringify(expired))
+  assert.equal(readDownloadRequest('motion-to-quash', storage), null)
+  assert.equal(storage.getItem('trc:download:motion-to-quash'), null)
+  storage.setItem('trc:download:motion-to-quash', '{broken')
+  assert.equal(readDownloadRequest('motion-to-quash', storage), null)
+  assert.throws(() => saveDownloadRequest('motion-to-quash', { ...answers, fullName: '' }, storage), /Please complete/)
+})
 
 async function preview(body, method = 'POST') {
   const response = {

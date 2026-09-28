@@ -40,7 +40,7 @@ export default function DocumentPreview({ type, answers }) {
       <div className="preview-heading">
         <div>
           <h2>Preview your document</h2>
-          <p>Review your answers before paying. After we verify your payment, we will email your PDF without the Tenant Resource Center watermark.</p>
+          <p>Review your answers before paying. Complete checkout with PayPal, then return to your document page using the same browser.</p>
         </div>
         <span>Watermarked preview</span>
       </div>

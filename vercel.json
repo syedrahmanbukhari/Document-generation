@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/download", "destination": "/index.html" },
+    { "source": "/download/", "destination": "/index.html" }
+  ],
+  "headers": [{ "source": "/download", "headers": [
+    { "key": "Referrer-Policy", "value": "no-referrer" }
+  ] }]
+}
