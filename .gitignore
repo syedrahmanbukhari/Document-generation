@@ -5,3 +5,7 @@ dist
 .env
 .env.*
 !.env.example
+
+# Customer questionnaires, PDFs, and fulfillment records contain personal data.
+output/
+tmp/

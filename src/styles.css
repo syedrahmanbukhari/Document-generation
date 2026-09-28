@@ -93,7 +93,14 @@ textarea { resize: vertical; }
 .checkout-summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 18px; border: 1px solid rgba(255,255,255,.2); border-radius: 12px; font-size: 16px; }
 .checkout-summary strong { color: #e9bd72; white-space: nowrap; }
 .checkout-status { margin: 0; color: #e2e8ef; text-align: center; }
-.paypal-buttons { min-height: 44px; width: 100%; position: relative; z-index: 1; }
+.paypal-hosted-buttons { min-height: 44px; width: 100%; position: relative; z-index: 1; }
+.paypal-hosted-buttons > div { width: min(100%, 400px); margin-inline: auto; }
+.delivery-instructions { padding: 18px; border: 1px solid rgba(255,255,255,.2); border-radius: 12px; color: #e2e8ef; line-height: 1.6; }
+.delivery-instructions ol { margin: 10px 0; padding-left: 22px; }
+.delivery-instructions li + li { margin-top: 6px; }
+.delivery-instructions p { margin: 10px 0 0; }
+.delivery-instructions a, .contact-support { color: #e9bd72; overflow-wrap: anywhere; }
+.contact-support { text-align: center; font-weight: 700; }
 .retry-button, .edit-answers { width: 100%; min-height: 44px; border: 1px solid rgba(255,255,255,.3); border-radius: 10px; background: transparent; color: #fff; font-weight: 700; }
 .retry-button:hover, .edit-answers:hover { background: rgba(255,255,255,.08); }
 .retry-button:disabled, .edit-answers:disabled { opacity: .55; cursor: wait; }

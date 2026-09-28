@@ -1,2 +1,2 @@
-import { previewDocument } from '../server/paypal.js'
+import { previewDocument } from '../server/documents.js'
 export default previewDocument

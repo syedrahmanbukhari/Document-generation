@@ -158,7 +158,7 @@ function App() {
           <section className="how-it-works">
             <div><strong>01</strong><span>Choose a document</span></div>
             <div><strong>02</strong><span>Answer the guided questions</span></div>
-            <div><strong>03</strong><span>Preview, pay, and download your PDF</span></div>
+            <div><strong>03</strong><span>Preview, pay, and receive your PDF by email</span></div>
           </section>
 
           <section className="disclaimer-card">
@@ -188,7 +188,7 @@ function App() {
 
       <main className="form-layout">
         <section className="form-intro">
-          <p>{checkoutAnswers ? 'Review your document below, then complete your payment to download the PDF without the watermark.' : 'Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.'}</p>
+          <p>{checkoutAnswers ? 'Review your document below, then follow the payment and email delivery instructions to receive your PDF without the watermark.' : 'Complete the information below to prepare your document. Fields marked with an asterisk (*) are required.'}</p>
         </section>
 
         <form className="question-form" onSubmit={(e) => e.preventDefault()}>
